@@ -18,7 +18,8 @@ export function injectFiles(api, name, version, appConfig) {
     forceSSL,
     gracefulShutdown,
     buildOptions,
-    longEnvVars
+    longEnvVars,
+    customBuildInstructions
   } = appConfig;
   const bundlePath = buildOptions.buildLocation;
   const {
@@ -75,6 +76,12 @@ export function injectFiles(api, name, version, appConfig) {
     copy(sourcePath, destPath, {
       bucketName: bucket
     });
+  }
+
+  if (customBuildInstructions) {
+    sourcePath = api.resolvePath(__dirname, './assets/custom.yaml');
+    destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/custom.config');
+    copy(sourcePath, destPath, { instructions: customBuildInstructions });
   }
 
   sourcePath = api.resolvePath(__dirname, './assets/health-check.js');
