@@ -7,6 +7,7 @@ import { EventDescription } from "@aws-sdk/client-elastic-beanstalk";
 
 let instanceFinderInterval: { [logName: string]: NodeJS.Timeout | undefined } = {};
 let activeInstanceListeners: { [instanceName: string]: NodeJS.Timeout } = {};
+let stopped = false;
 
 async function listen (
   logGroupName: string,
@@ -81,6 +82,8 @@ async function startInstanceLogListener (
   logGroupName: string,
   instanceName: string
 ) {
+  if (stopped) return;
+
   const logStreamName = instanceName;
 
   try {
@@ -88,6 +91,7 @@ async function startInstanceLogListener (
     let nextToken: string | undefined = await listen(logGroupName, logStreamName);
 
     return setInterval(async () => {
+      if (stopped) return;
       nextToken = await listen(logGroupName, logStreamName, nextToken);
     }, 5000);
   } catch (err) {
@@ -130,20 +134,26 @@ export async function startLogStreamListener (
   await startInstanceListeners(logGroupName, getInstancesFromLogs(eventLog));
 
   instanceFinderInterval[logFileName] = setInterval(async () => {
+    if (stopped) return;
+    logStreamEvent(`Start instance listener in interval ${logGroupName}`);
     await startInstanceListeners(logGroupName, getInstancesFromLogs(eventLog));
   }, 5000);
 }
 
 export async function stopLogStreamListener () {
+  stopped = true;
+
   for (const logName in instanceFinderInterval) {
     const listener = instanceFinderInterval[logName];
     logStreamEvent(`Stop log stream listener ${logName}`);
     clearInterval(listener);
+    delete instanceFinderInterval[logName];
   }
 
   for (const instanceName in activeInstanceListeners) {
     const listener = activeInstanceListeners[instanceName];
     logStreamEvent(`Stop log stream listener ${instanceName}`);
     clearInterval(listener);
+    delete activeInstanceListeners[instanceName];
   }
 }
