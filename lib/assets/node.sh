@@ -19,15 +19,22 @@ if [[ $MAJOR_NODE_VERSION == "14" && $MINOR_NODE_VERSION -ge 21 ]]; then
   else
     echo "Using Meteor's custom NodeJS v14 LTS version"
     # https://hub.docker.com/layers/meteor/node/14.21.4/images/sha256-f4e19b4169ff617118f78866c2ffe392a7ef44d4e30f2f9fc31eef2c35ceebf3?context=explore
-    curl "https://static.meteor.com/dev-bundle-node-os/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" | tar xzf - -C /tmp/
-    NEW_PATH="/tmp/node-v$NODE_VERSION-linux-x64/bin"
+    curl "https://static.meteor.com/dev-bundle-node-os/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" | tar xzf - -C ./
+    
+    NEW_PATH="./node-v$NODE_VERSION-linux-x64/bin"
+    
+    ln -s $NEW_PATH/node ./node
+    ln -s $NEW_PATH/npm ./npm
+    
     # Save the new config to all environments
     echo "export PATH=$NEW_PATH:\$PATH" >> $ENV_PATH
     echo ". $ENV_PATH" >> ~/.shinit
     echo ". $ENV_PATH" >> ~/.bashrc
     . $ENV_PATH
+    
     # Save installed Node version
     echo "export INSTALLED_NODE_VERSION=$(node --version)" >> $ENV_PATH
+    
     # Set Node path for start.sh
     export NODE_PATH=$NEW_PATH
   fi
