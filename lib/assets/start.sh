@@ -24,4 +24,4 @@ echo "=> Starting health check server"
 ./node health-check.js &
 
 echo "=> Starting App"
-/node main.js
+./node main.js
