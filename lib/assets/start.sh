@@ -7,6 +7,15 @@ export NVM_DIR="/.nvm"
 
 [[ ! -z "$MUP_ENV_FILE_VERSION" ]] && { echo "Long Env is enabled."; source /etc/app/env.txt; }
 
+echo "ENV_PATH $ENV_PATH"
+echo "NODE_PATH $NODE_PATH"
+echo "NODE_VERSION $NODE_VERSION"
+ls "$NODE_PATH"
+ls "/tmp/node_env.sh"
+
+alias node="$NODE_PATH/node"
+alias npm="$NODE_PATH/npm"
+
 echo "Node version"
 echo $(node --version)
 echo "Npm version"
@@ -15,7 +24,7 @@ echo $(npm --version)
 export METEOR_SETTINGS=$(node -e 'console.log(decodeURIComponent(process.env.METEOR_SETTINGS_ENCODED))')
 
 echo "=> Starting health check server"
-node health-check.js &
+$NODE_PATH/node health-check.js &
 
 echo "=> Starting App"
-node main.js
+$NODE_PATH/node main.js
