@@ -5,7 +5,7 @@ import { MupApi } from "./types";
 import { logStreamEvent, names } from "./utils";
 import { EventDescription } from "@aws-sdk/client-elastic-beanstalk";
 
-let instanceFinderInterval: NodeJS.Timeout | undefined;
+let instanceFinderInterval: { [logName: string]: NodeJS.Timeout | undefined } = {};
 let activeInstanceListeners: { [instanceName: string]: NodeJS.Timeout } = {};
 
 async function listen (
@@ -127,13 +127,15 @@ export async function startLogStreamListener (
 
   await startInstanceListeners(logGroupName, getInstancesFromLogs(eventLog));
 
-  instanceFinderInterval = setInterval(async () => {
+  instanceFinderInterval[logFileName] = setInterval(async () => {
     await startInstanceListeners(logGroupName, getInstancesFromLogs(eventLog));
   }, 5000);
 }
 
 export async function stopLogStreamListener () {
-  clearInterval(instanceFinderInterval);
+  Object.values(instanceFinderInterval).forEach(listener => {
+    clearInterval(listener);
+  });
 
   Object.values(activeInstanceListeners).forEach(listener => {
     clearInterval(listener);
