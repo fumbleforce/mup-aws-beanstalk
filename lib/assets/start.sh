@@ -3,10 +3,6 @@
 if [ -s "$NVM_DIR/nvm.sh" ]; then
   export NVM_DIR="/.nvm"
   . "$NVM_DIR/nvm.sh"
-
-  # Create symlinks to nvm binaries
-  ln -sf "$NVM_DIR/versions/node/$(nvm version)/bin/node" ./node
-  ln -sf "$NVM_DIR/versions/node/$(nvm version)/bin/npm" ./npm
 fi
 
 [[ ! -z "$MUP_ENV_FILE_VERSION" ]] && { echo "Long Env is enabled."; source /etc/app/env.txt; }

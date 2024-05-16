@@ -24,7 +24,6 @@ async function listen (
   }
 
   try {
-    logStreamEvent(`> Getting stream events ${logGroupName}:${logStreamName}`);
     const { events, nextForwardToken } = await logs.getLogEvents(params);
 
     events!.forEach(event => {
@@ -87,7 +86,6 @@ async function startInstanceLogListener (
   const logStreamName = instanceName;
 
   try {
-    console.log(`Started listening to ${logGroupName}:${instanceName}`);
     let nextToken: string | undefined = await listen(logGroupName, logStreamName);
 
     return setInterval(async () => {
@@ -135,7 +133,6 @@ export async function startLogStreamListener (
 
   instanceFinderInterval[logFileName] = setInterval(async () => {
     if (stopped) return;
-    logStreamEvent(`Start instance listener in interval ${logGroupName}`);
     await startInstanceListeners(logGroupName, getInstancesFromLogs(eventLog));
   }, 5000);
 }

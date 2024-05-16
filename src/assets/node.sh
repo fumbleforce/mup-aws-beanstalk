@@ -48,6 +48,10 @@ else
   nvm use $NODE_VERSION
   nvm alias default $NODE_VERSION
   npm i -g npm@$NPM_VERSION
+  
+    # Create symlinks to nvm binaries
+  ln -sf "$NVM_DIR/versions/node/$(nvm version)/bin/node" ./node
+  ln -sf "$NVM_DIR/versions/node/$(nvm version)/bin/npm" ./npm
 fi
 
 APP_PATH="$(/opt/elasticbeanstalk/bin/get-config container -k app_staging_dir)"
@@ -58,5 +62,5 @@ echo "APP_PATH: $APP_PATH"
 echo "APP_PATH: $APP_PATH"
 
 cd "$APP_PATH"
-ls
-cd programs/server && npm install --unsafe-perm
+
+cd programs/server && ../../npm install --unsafe-perm
