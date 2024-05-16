@@ -23,6 +23,7 @@ async function listen (
   }
 
   try {
+    logStreamEvent(`> Getting stream events ${logGroupName}:${logStreamName}`);
     const { events, nextForwardToken } = await logs.getLogEvents(params);
 
     events!.forEach(event => {
@@ -119,7 +120,8 @@ export async function startLogStreamListener (
   logFileName: string
 ) {
   const config = api.getConfig();
-  console.log("Start log stream listener");
+
+  logStreamEvent(`Start log stream listener ${logFileName}`);
 
   const { environment } = names(config);
 
@@ -133,11 +135,15 @@ export async function startLogStreamListener (
 }
 
 export async function stopLogStreamListener () {
-  Object.values(instanceFinderInterval).forEach(listener => {
+  for (const logName in instanceFinderInterval) {
+    const listener = instanceFinderInterval[logName];
+    logStreamEvent(`Stop log stream listener ${logName}`);
     clearInterval(listener);
-  });
+  }
 
-  Object.values(activeInstanceListeners).forEach(listener => {
+  for (const instanceName in activeInstanceListeners) {
+    const listener = activeInstanceListeners[instanceName];
+    logStreamEvent(`Stop log stream listener ${instanceName}`);
     clearInterval(listener);
-  });
+  }
 }
