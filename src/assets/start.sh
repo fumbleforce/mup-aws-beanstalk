@@ -1,17 +1,15 @@
 #!/bin/bash
 
-export NVM_DIR="/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  export NVM_DIR="/.nvm"
+  . "$NVM_DIR/nvm.sh"
 
-# nvm use default --delete-prefix --silent
+  # Create symlinks to nvm binaries
+  ln -sf "$NVM_DIR/versions/node/$(nvm version)/bin/node" ./node
+  ln -sf "$NVM_DIR/versions/node/$(nvm version)/bin/npm" ./npm
+fi
 
 [[ ! -z "$MUP_ENV_FILE_VERSION" ]] && { echo "Long Env is enabled."; source /etc/app/env.txt; }
-
-echo "PATH $PATH"
-echo "ENV_PATH $ENV_PATH"
-echo "NODE_PATH $NODE_PATH"
-echo "NODE_VERSION $NODE_VERSION"
-ls "/tmp"
 
 echo "Node version"
 echo $(./node --version)
